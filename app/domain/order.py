@@ -8,6 +8,7 @@ from app.domain.errors import EmptyOrder, InvalidStatusTransition
 class OrderStatus(str, Enum):
     DRAFT = "draft"
     CONFIRMED = "confirmed"
+    CANCELLED = "cancelled"
 
 
 @dataclass(frozen=True)
@@ -35,3 +36,8 @@ class Order:
         if self.status is not OrderStatus.DRAFT:
             raise InvalidStatusTransition(f"{self.status.value} -> confirmed")
         self.status = OrderStatus.CONFIRMED
+
+    def cancel(self) -> None:
+        if self.status is not OrderStatus.DRAFT:
+            raise InvalidStatusTransition(f"{self.status.value} -> cancelled")
+        self.status = OrderStatus.CANCELLED
