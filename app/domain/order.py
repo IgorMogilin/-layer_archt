@@ -1,11 +1,11 @@
 from dataclasses import dataclass, field
 from decimal import Decimal
-from enum import Enum
+from enum import StrEnum
 
 from app.domain.errors import EmptyOrder, InvalidStatusTransition, OrderAlreadyCancelled
 
 
-class OrderStatus(str, Enum):
+class OrderStatus(StrEnum):
     DRAFT = "draft"
     CONFIRMED = "confirmed"
     CANCELLED = "cancelled"

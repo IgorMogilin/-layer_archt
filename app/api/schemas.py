@@ -1,7 +1,7 @@
 from decimal import Decimal
 from typing import Annotated, Self
 
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from app.domain.order import Order, OrderStatus
 
