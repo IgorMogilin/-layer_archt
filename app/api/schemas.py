@@ -23,7 +23,7 @@ class OrderIn(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     customer_id: CustomerId
-    items: Annotated[list[OrderItemIn], Field(min_length=1)]
+    items: list[OrderItemIn]
 
 
 class OrderOut(BaseModel):

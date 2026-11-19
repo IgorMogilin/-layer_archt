@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from decimal import Decimal
 from enum import Enum
 
-from app.domain.errors import EmptyOrder, InvalidStatusTransition
+from app.domain.errors import EmptyOrder, InvalidStatusTransition, OrderAlreadyCancelled
 
 
 class OrderStatus(str, Enum):
@@ -38,6 +38,8 @@ class Order:
         self.status = OrderStatus.CONFIRMED
 
     def cancel(self) -> None:
-        if self.status is not OrderStatus.DRAFT:
+        if self.status is OrderStatus.CONFIRMED:
             raise InvalidStatusTransition(f"{self.status.value} -> cancelled")
+        if self.status is OrderStatus.CANCELLED:
+            raise OrderAlreadyCancelled(f"{self.status.value} -> cancelled")
         self.status = OrderStatus.CANCELLED

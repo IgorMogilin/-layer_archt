@@ -12,3 +12,7 @@ class EmptyOrder(DomainError):
 
 class InvalidStatusTransition(DomainError):
     pass
+
+
+class OrderAlreadyCancelled(DomainError):
+    pass
