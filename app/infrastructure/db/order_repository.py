@@ -1,3 +1,4 @@
+from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.order import Order, OrderItem, OrderStatus
@@ -31,6 +32,33 @@ class SqlAlchemyOrderRepository:
             oid = order.id if order.id is not None else "<unsaved>"
             raise RuntimeError(f"order {oid} not found")
         row.status = order.status.value
+
+    async def list(
+        self,
+        *,
+        limit: int,
+        offset: int,
+        ascending: bool,
+        status: OrderStatus | None,
+    ) -> list[Order]:
+        stmt = select(OrderRow)
+
+        if status is not None:
+            stmt = stmt.where(OrderRow.status == status.value)
+
+        ordering = OrderRow.id.asc() if ascending else OrderRow.id.desc()
+        stmt = stmt.order_by(ordering).limit(limit).offset(offset)
+
+        rows = (await self._s.scalars(stmt)).all()
+        return [self._to_domain(r) for r in rows]
+
+    async def count(self, *, status: OrderStatus | None) -> int:
+        stmt = select(func.count()).select_from(OrderRow)
+
+        if status is not None:
+            stmt = stmt.where(OrderRow.status == status.value)
+
+        return int((await self._s.scalar(stmt)) or 0)
 
     @staticmethod
     def _to_domain(row: OrderRow) -> Order:

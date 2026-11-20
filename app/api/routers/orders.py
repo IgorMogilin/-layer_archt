@@ -1,11 +1,13 @@
 from fastapi import APIRouter
 
-from app.api.deps import UowDep
+from app.api.deps import UowDep, Page
 from app.api.error_handlers import PROBLEM
-from app.api.schemas import OrderIn, OrderOut
+from app.api.schemas import OrderIn, OrderOut, OrderPage, PageMeta
 from app.application.use_cases.cancel_order import CancelOrder
 from app.application.use_cases.confirm_order import ConfirmOrder
 from app.application.use_cases.create_order import CreateOrder
+from app.application.use_cases.list_orders import ListOrders
+from app.domain.order import OrderStatus
 
 router = APIRouter(prefix="/orders", tags=["orders"])
 
@@ -69,3 +71,26 @@ async def cancel_order(
 ) -> OrderOut:
     order = await CancelOrder(uow).execute(order_id)
     return OrderOut.from_domain(order)
+
+
+@router.get(
+    "",
+    response_model=OrderPage,
+    summary="Список заказов",
+    operation_id="listOrders",
+)
+async def list_orders(
+    page: Page,
+    uow: UowDep,
+    status: OrderStatus | None = None,
+) -> OrderPage:
+    result = await ListOrders(uow).execute(
+        limit=page.limit,
+        offset=page.offset,
+        ascending=page.ascending,
+        status=status,
+    )
+    return OrderPage(
+        items=[OrderOut.from_domain(o) for o in result.items],
+        meta=PageMeta(limit=page.limit, offset=page.offset, total=result.total),
+    )

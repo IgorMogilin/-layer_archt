@@ -42,3 +42,14 @@ class OrderOut(BaseModel):
             status=order.status,
             total=order.total,
         )
+
+
+class PageMeta(BaseModel):
+    limit: int
+    offset: int
+    total: int
+
+
+class OrderPage(BaseModel):
+    items: list[OrderOut]
+    meta: PageMeta

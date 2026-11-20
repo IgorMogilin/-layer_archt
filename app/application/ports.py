@@ -1,12 +1,21 @@
 from typing import Protocol
 
-from app.domain.order import Order
+from app.domain.order import Order, OrderStatus
 
 
 class OrderRepository(Protocol):
     async def get(self, order_id: int) -> Order | None: ...
     async def save(self, order: Order) -> None: ...
     async def add(self, order: Order) -> Order: ...
+    async def list(
+            self,
+            *,
+            limit: int,
+            offset: int,
+            ascending: bool,
+            status: OrderStatus | None,
+    ) -> list[Order]: ...
+    async def count(self, *, status: OrderStatus | None) -> int: ...
 
 
 class UnitOfWork(Protocol):
