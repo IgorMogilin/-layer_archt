@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.api.deps import UowDep, Page
+from app.api.deps import Page, UowDep
 from app.api.error_handlers import PROBLEM
 from app.api.schemas import OrderIn, OrderOut, OrderPage, PageMeta
 from app.application.use_cases.cancel_order import CancelOrder
